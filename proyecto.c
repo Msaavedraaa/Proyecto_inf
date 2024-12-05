@@ -44,27 +44,36 @@ typedef struct{
 int buscarCodigo(Tproducto productos[MAX_PRODUCTOS], int numProductos, char codigo[5]){
 
     int i = 0;
+    bool encontrado = false;
 
-    for(i=0; i < numProductos; i++){
-        if(strcmp(productos[i].codigoProducto, codigo) == 0)
-        {           printf("\nEste codigo ya existe!");
-            return i;
+
+    for(i=0; i < numProductos && !encontrado; i++){
+        if(strcmp(productos[i].codigoProducto, codigo) == 0){
+            encontrado = true;
+
         }
     }
-    return -1;
+    if(!encontrado){
+        i=-1;
+    }
+    return i;
 }
 
 int buscarDescripcion(Tproducto productos[MAX_PRODUCTOS], int numProductos, char descripcion[30]){
 
     int i = 0;
+    bool encontrado = false;
 
-    for(i=0; i < numProductos; i++){
+    for(i=0; i < numProductos && !encontrado; i++){
         if(strcmp(productos[i].descripcion, descripcion) == 0){
-            printf("\nEsta descripcion ya existe!");
-            return i;
+            encontrado = true;
         }
     }
-    return -1;
+
+    if(!encontrado){
+        i=-1;
+    }
+    return i;
 }
 
 void altaProducto(Tproducto productos[MAX_PRODUCTOS], int *numProductos){
@@ -113,6 +122,35 @@ void altaProducto(Tproducto productos[MAX_PRODUCTOS], int *numProductos){
 }
 
 
+void modificarProducto(Tproducto productos[MAX_PRODUCTOS], int numProductos){
+
+    char codigo[5];
+
+    do{
+
+        printf("\nIntroduce el codigo del producto (3 numeros y 1 letra): ");
+        scanf(" %[^\n]", codigo);
+
+    }while(strlen(codigo) != 4);
+
+    int indice = buscarCodigo(productos, numProductos, codigo);
+
+    if(buscarCodigo(productos, numProductos, codigo) != -1){
+        printf("\nLas propiedades de este producto son: ");
+        printf("\nDescripcion: %s", productos[indice].descripcion);
+        printf("\nStock Disponible: %d", productos[indice].stock);
+        printf("\nStock Minimo: %d", productos[indice].minStock);
+        printf("\nPrecio por unidad: %f", productos[indice].precioUnidad);
+        printf("\nDescuento aplicado: %f", productos[indice].descuento);
+    }
+    else{
+        printf("Este producto no existe, primero dalo de alta");
+    }
+    
+
+}
+
+
 
 int main(){
 
@@ -125,7 +163,7 @@ int main(){
     int numProductos = 1;
 
     altaProducto(productos, &numProductos);
-
+    modificarProducto(productos, numProductos);
 
     return 0;
 
