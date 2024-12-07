@@ -87,6 +87,7 @@ int main() {
                                 bajaProducto(productos, &num_productos);
                                 break;
                         case (3):
+				modificarProducto(productos, num_productos);
                                 break;
                         case (4):
                                 break;
