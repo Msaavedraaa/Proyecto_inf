@@ -53,7 +53,7 @@ void eliminarProducto(TProducto productos[], int *num_productos, int posicion);
 
 void bajaProducto(TProducto productos[], int *num_productos);
 
-//void modificarProducto(TProducto, int, char);
+void modificarProducto(TProducto productos[], int num_productos);
 
 //void crearTicket(TProducto, char);
 
@@ -266,4 +266,56 @@ void bajaProducto(TProducto productos[], int *num_productos) {
 			eliminarProducto(productos, num_productos, posicion);			
 		} 
 	}
+}
+
+void modificarProducto(TProducto productos[], int num_productos) {
+        TProducto producto;
+
+        printf("Ingrese el codigo del producto a modificar: ");
+        scanf(" %s", producto.codigo);
+
+        int es_codigo = esCodigo(productos, num_productos, producto.codigo);
+
+        if(es_codigo) {
+                printf("El producto de codigo %s no existe.\n", producto.codigo);
+        } else {
+                int eleccion, posicion;
+
+                buscarProducto(productos, num_productos, producto.codigo);
+                posicionProducto(productos, num_productos, &posicion, producto.codigo);
+
+                printf("Que elemento desea modificar?\n");
+                printf("1 - Descripcion\n");
+                printf("2 - Stock\n");
+                printf("3 - Stock minimo\n");
+                printf("4 - Precio unitario\n");
+                printf("5 - Descuento\n");
+                printf("Introduzca otra tecla para salir\n");
+                scanf(" %d", &eleccion);
+
+                switch (eleccion) {
+                        case (1):
+                                printf("Introduce la nueva descripcion: ");
+                                scanf(" %[^\n]", productos[posicion].descripcion);
+                                break;
+                        case (2):
+                                printf("Ingrese el nuevo numero de unidades existentes: ");
+                                scanf(" %d", &productos[posicion].stock);
+                                break;
+                        case (3):
+                                printf("Ingrese la nueva cantidad minima de existencias: ");
+                                scanf(" %d", &productos[posicion].stock_minimo);
+                                break;
+                        case (4):
+                                printf("Ingrese el nuevo precio unitario: ");
+                                scanf(" %f", &productos[posicion].precio);
+                                break;
+                        case (5):
+                                printf("Introduzca el nuevo descuento a aplicar: ");
+                                scanf(" %d", &productos[posicion].descuento);
+                                break;
+                        default:
+                                printf("\n");
+                }
+        }
 }
