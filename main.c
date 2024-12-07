@@ -62,12 +62,44 @@ void bajaProducto(TProducto productos[], int *num_productos);
 //void comprobarStock(TProducto);
 
 int main() {
-	int num_productos = 0;
-	TProducto productos[MAX_PRODUCTOS];
+	int eleccion;
+        int num_productos = 0;
+        int salir = 0;
 
-	altaProducto(productos, &num_productos);
-	bajaProducto(productos, &num_productos);
+        TProducto productos[MAX_PRODUCTOS];
 
+        do {
+                printf("Seleccione una opcion:\n");
+                printf("1 - Dar alta producto:\n");
+                printf("2 - Dar baja producto:\n");
+                printf("3 - Modificar producto:\n");
+                printf("4 - Crear tique:\n");
+                printf("5 - Buscar tique:\n");
+                printf("6 - Comprobar stock:\n");
+                printf("Introduzca otra tecla para salir\n");
+                scanf(" %d", &eleccion);
+
+                switch (eleccion) {
+                        case (1):
+                                altaProducto(productos, &num_productos);
+                                break;
+                        case (2):
+                                bajaProducto(productos, &num_productos);
+                                break;
+                        case (3):
+                                break;
+                        case (4):
+                                break;
+                        case (5):
+                                break;
+                        case (6):
+                                break;
+                        default:
+                                printf("Hasta la proxima!\n");
+                                salir = 1;
+                }
+        } while(!salir);
+	
 	return 0;
 }
 
@@ -159,10 +191,14 @@ void altaProducto(TProducto productos[], int *num_productos) {
 			printf("Ingrese el codigo del producto: ");
 			scanf(" %s", nuevo_producto.codigo);	
 
-			codigo_correcto = (esCodigo(productos, *num_productos, nuevo_producto.codigo)) && (verificarCodigo(nuevo_producto.codigo));
-			if (!codigo_correcto) {
-				printf("El codigo ya existe.\n");
-			}
+			codigo_existe = esCodigo(productos, *num_productos, nuevo_producto.codigo);
+                        codigo_correcto = verificarCodigo(nuevo_producto.codigo);
+
+                        if (!codigo_existe) {
+                                printf("El codigo ya existe.\n");
+                        } else if (!codigo_correcto) {
+                                printf("El codigo no tiene el formato correcto, recuerde, tres letras y un numero.\n");
+                        }
 		} while(!codigo_correcto); 
 
 		do {
