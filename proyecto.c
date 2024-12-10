@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <time.h>
 #include <string.h>
 
 #define MAX_PRODUCTOS 50
@@ -525,20 +524,11 @@ int main(){
     bool isExit = false;
     int numProductos, numTickets = 0;
 
-    Tproducto productos[MAX_PRODUCTOS];
+    Tproducto productos[MAX_PRODUCTOS] = {0};
     Tticket tickets[MAX_TICKETS] = {0};
 
-    Tticket ticket1;
-    strcpy(ticket1.codigo, "123A");
-    tickets[0] = ticket1;
-    numTickets += 1;
-    Tproducto producto1;
-    strcpy(producto1.codigoProducto, "123A");
-    strcpy(producto1.descripcion, "boligrafo azul");
-    productos[0] = producto1;
     
     
-    numProductos = 1;
 
     while(!isExit){
         printf("\nSelecciona una opcion: ");
@@ -587,3 +577,5 @@ int main(){
 
    
 }  
+
+
