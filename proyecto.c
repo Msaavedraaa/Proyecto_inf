@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 #include <string.h>
 
 #define MAX_PRODUCTOS 50
@@ -35,9 +36,9 @@ typedef struct{
 typedef struct{
     char codigoProducto[MAX_CODIGO];
     Tproducto producto;
-    int precioUnidad;
+    float precioUnidad;
     int unidadesVendidas;
-    int descuentoAplicado;
+    float descuentoAplicado;
 
 } TLineaTicket;
 
@@ -45,6 +46,7 @@ typedef struct{
 typedef struct{
     char codigo[MAX_CODIGO];
     TLineaTicket lineasTicket[10];
+    int cantidadLineas;
     float importeTotal;
     Tfecha fecha;
     Thora hora;
@@ -210,11 +212,7 @@ void bajaProducto(Tproducto productos[MAX_PRODUCTOS], int *numProductos){
                 
                 int i = 0;
                 for(i=indice; i < *numProductos-1; i++){
-                    printf("\n%s", productos[i].codigoProducto);
-
                     productos[i] = productos[i+1];
-                    printf("\n%s", productos[i].codigoProducto);
-
                 }
                 (*numProductos)--;
                 
@@ -356,7 +354,6 @@ void crearTicket(Tticket tickets[MAX_TICKETS], Tproducto productos[MAX_PRODUCTOS
             char codigoProducto[MAX_CODIGO];
             int indice = 0;
             
-
             do{
                 printf("\nIntroduce el codigo del producto a añadir (3 numeros y 1 letra): \n");
                 scanf(" %[^\n]", codigoProducto);
@@ -368,8 +365,6 @@ void crearTicket(Tticket tickets[MAX_TICKETS], Tproducto productos[MAX_PRODUCTOS
 
                 strcpy(nuevaLinea.codigoProducto, codigoProducto);
                 nuevaLinea.producto = productos[indice];
-                
-                nuevaLinea.descuentoAplicado = productos[indice].precioUnidad * (productos[indice].descuento / 100);
                 nuevaLinea.precioUnidad = productos[indice].precioUnidad;
 
                do{
@@ -385,35 +380,38 @@ void crearTicket(Tticket tickets[MAX_TICKETS], Tproducto productos[MAX_PRODUCTOS
                     if(productos[indice].descuento <= 0){
                         nuevaLinea.descuentoAplicado = productos[indice].precioUnidad * nuevaLinea.unidadesVendidas;
                         ticketNuevo.importeTotal += productos[indice].precioUnidad * nuevaLinea.unidadesVendidas;
-                        ticketNuevo.lineasTicket[numLineas] = nuevaLinea;
 
                     }
                     else{
                         nuevaLinea.descuentoAplicado = (productos[indice].precioUnidad * nuevaLinea.unidadesVendidas) * (productos[indice].descuento/100);
                         ticketNuevo.importeTotal += (productos[indice].precioUnidad * nuevaLinea.unidadesVendidas) * (productos[indice].descuento/100);
-                        ticketNuevo.lineasTicket[numLineas] = nuevaLinea;
 
                     }
 
-                    do{
-                        printf("\nIntroduce hora y minuto de compra(cada dato espaciado):");
-                        scanf("%d %d", &ticketNuevo.hora.hora, &ticketNuevo.hora.minuto);
-                    }while((ticketNuevo.hora.hora > 23 || ticketNuevo.hora.hora < 0) && (ticketNuevo.hora.minuto > 60 || ticketNuevo.hora.minuto < 0));
+                    ticketNuevo.lineasTicket[numLineas] = nuevaLinea;
 
+                    
                    
                     numLineas++;
+
 
                     if(numLineas < 10){
                     do{
                         printf("\nQuiere crear otra linea? (s/n)");
                         scanf(" %c", &confirmacion);
-
                     }while(confirmacion != 's' && confirmacion != 'n');
 
                         if(confirmacion == 'n'){
                             addLines = false;
+                            do{
+                                printf("\nIntroduce hora y minuto de compra (cada dato espaciado):");
+                                scanf("%d %d", &ticketNuevo.hora.hora, &ticketNuevo.hora.minuto);
+                            }while((ticketNuevo.hora.hora > 23 || ticketNuevo.hora.hora < 0) || (ticketNuevo.hora.minuto > 60 || ticketNuevo.hora.minuto < 0));
+                            
+                            ticketNuevo.cantidadLineas = numLineas;
                             tickets[*numTickets] = ticketNuevo;
                             (*numTickets)++;
+                            
                         }
                     }
                }
@@ -422,32 +420,104 @@ void crearTicket(Tticket tickets[MAX_TICKETS], Tproducto productos[MAX_PRODUCTOS
                     do{
                         printf("\nQuiere crear una linea nueva? (s/n)");
                         scanf(" %c", &confirmacion);
-
                     }while(confirmacion != 's' && confirmacion != 'n');
 
                         if(confirmacion == 'n'){
                             addLines = false;
+                            if(numLineas > 0){
+                                do{
+                                    printf("\nIntroduce hora y minuto de compra (cada dato espaciado):");
+                                    scanf("%d %d", &ticketNuevo.hora.hora, &ticketNuevo.hora.minuto);
+                                }while((ticketNuevo.hora.hora > 23 || ticketNuevo.hora.hora < 0) || (ticketNuevo.hora.minuto > 60 || ticketNuevo.hora.minuto < 0));
+                                ticketNuevo.cantidadLineas = numLineas;
+                                tickets[*numTickets] = ticketNuevo;
+                                (*numTickets)++;
+                        
+                            }
                         }
                     }
-               }
-
-                
-               
-
-                
+               }           
             }
-
-
         }        
-    
+    }
+}
 
+void buscarEliminarTicket(Tticket tickets[MAX_TICKETS], int numTickets){
+    
+    char codigoTicket[MAX_CODIGO];
+    char eleccion;
+    int indice, i, j = 0;
+
+    do{
+
+        printf("\nIntroduce el codigo del ticket (3 numeros y 1 letra): ");
+        scanf(" %[^\n]", codigoTicket);
+
+    }while(strlen(codigoTicket) != 4);
+
+    indice = buscarCodigoTicket(tickets, numTickets, codigoTicket);
+
+    if(indice != -1){
+        printf("\nTICKET %s\n", tickets[indice].codigo);
+        printf("\nHORA DE COMPRA  %d:%d", tickets[indice].hora.hora, tickets[indice].hora.minuto);
+        printf("\n---------------------------");
+
+        for(i=0; i < tickets[indice].cantidadLineas; i++){
+            printf("\n\"%s\"-%s | Precio Ud: %.2f€ | Descuento: %.2f%% | Uds. Vendidas: %d",tickets[indice].lineasTicket[i].codigoProducto, tickets[indice].lineasTicket[i].producto.descripcion, tickets[indice].lineasTicket[i].precioUnidad, tickets[indice].lineasTicket[i].producto.descuento, tickets[indice].lineasTicket[i].unidadesVendidas);
+        }
+
+        printf("\nIMPORTE TOTAL: %.2f€\n\n", tickets[indice].importeTotal);
+
+        printf("\n\nQUE DESEA HACER:");
+        printf("\nM-Volver Al Menu");
+        printf("\nE-Eliminar Ticket");
+        do{
+            printf("\n\nQUE DESEA HACER:");
+            printf("\nM-Volver Al Menu");
+            printf("\nE-Eliminar Ticket");
+            scanf(" %c", &eleccion);
+        }while(eleccion != 'M' && eleccion != 'E');
+
+        if(eleccion == 'E'){
+            for(j = indice; j<numTickets-1; j++){
+                tickets[j] = tickets[j+1];
+            }
+            printf("\nTicket Eliminado con exito!\n\n");
+        }
+
+
+    }
+    else{
+        printf("\nEste ticket no existe!\n");
+    }
+       
+}
+
+void comprobarStock(Tproducto productos[MAX_PRODUCTOS], int numProductos){
+    int i, count = 0;
+
+    for(i=0; i < numProductos; i++){
+        if(productos[i].stock <= productos[i].minStock){
+            printf("\n------------------------------------------");
+            printf("\n\"%s\", %s", productos[i].codigoProducto, productos[i].descripcion);
+            printf("\nStock Disponible: %d", productos[i].stock);
+            printf("\nStock Minimo Indispensable: %d", productos[i].minStock);
+            printf("\nPrecio Unitario: %f", productos[i].precioUnidad);
+            printf("\nDescuento Aplicable: %f", productos[i].descuento);
+            printf("\n------------------------------------------");
+            count++;
+        }
+        printf("\n");
+    }
+    if(count == 0){
+        printf("\nTienes suficiente Stock para todos los productos que tienes\n\n");
+    }
+    else{
+        printf("\nLos productos pendientes de pedido al proveedor son %d\n\n", count);
     }
 
 
 }
-
-
-
 
 int main(){
 
@@ -456,14 +526,12 @@ int main(){
     int numProductos, numTickets = 0;
 
     Tproducto productos[MAX_PRODUCTOS];
-    Tticket tickets[MAX_TICKETS];
+    Tticket tickets[MAX_TICKETS] = {0};
 
     Tticket ticket1;
     strcpy(ticket1.codigo, "123A");
     tickets[0] = ticket1;
     numTickets += 1;
-    int indice = buscarCodigoTicket(tickets, numTickets, "123A");
-    printf("%d", indice);
     Tproducto producto1;
     strcpy(producto1.codigoProducto, "123A");
     strcpy(producto1.descripcion, "boligrafo azul");
@@ -479,6 +547,8 @@ int main(){
         printf("\n3-Modificar Producto");
         printf("\n4-Buscar Producto por Codigo");
         printf("\n5-Crear Ticket Nuevo");
+        printf("\n6-Buscar o Eliminar Ticket");
+        printf("\n7-Comprobar Stock Productos");
         printf("\n0-Salir Del Programa\n");
         scanf("%d", &seleccion);
 
@@ -497,6 +567,12 @@ int main(){
                 break;
             case(5):
                 crearTicket(tickets, productos, &numTickets, numProductos);
+                break;
+            case(6):
+                buscarEliminarTicket(tickets, numTickets);
+                break;
+            case(7):
+                comprobarStock(productos, numProductos);
                 break;
             default:
                 printf("\nHasta la proxima!");
