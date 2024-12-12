@@ -52,7 +52,7 @@ typedef struct{
 
 } Tticket;
 
-
+//Funcion para poder establecer la logica de la fecha en el ticket
 void establecerFecha(int *year, int *month, int *day){
 
     printf("\nEn que año se realiza la compra?");
@@ -84,6 +84,7 @@ void establecerFecha(int *year, int *month, int *day){
         }
         
     }
+
     else{
         do{
             printf("\nEn que dia se realiza la compra?");
@@ -91,12 +92,9 @@ void establecerFecha(int *year, int *month, int *day){
         }while(*day < 0 || *day > 30);
     }
 
-   
-
-
 }
 
-
+//Tiene la misma funcionalidad que "buscarCodigo", pero en este caso para los Tickets generados
 int buscarCodigoTicket(Tticket tickets[MAX_TICKETS], int numTickets, char codigo[MAX_CODIGO]){
 
     int i = 0;
@@ -131,7 +129,6 @@ int buscarCodigo(Tproducto productos[MAX_PRODUCTOS], int numProductos, char codi
     for(i=0; i < numProductos && !encontrado; i++){
         if(strcmp(productos[i].codigoProducto, codigo) == 0){
             encontrado = true;
-
         }
     }
 
@@ -175,19 +172,13 @@ void altaProducto(Tproducto productos[MAX_PRODUCTOS], int *numProductos){
 
         Tproducto nuevoProducto;
 
-
-
         do{
 
             printf("\nIntroduce el codigo del producto (3 numeros y 1 letra): ");
             scanf(" %[^\n]", nuevoProducto.codigoProducto);
 
         }while(buscarCodigo(productos, *numProductos, nuevoProducto.codigoProducto) != -1 || strlen(nuevoProducto.codigoProducto) != 4);
-    
-
-  
-
-    
+        
         do{
 
             printf("\nIntroduce la descripcion del producto (30 caracteres maximo): ");
@@ -212,12 +203,10 @@ void altaProducto(Tproducto productos[MAX_PRODUCTOS], int *numProductos){
         (*numProductos)++;
         
     }
+
     else{
         printf("\nNo se pueden añadir mas productos, primero da de baja algun producto!");
     }
-
-   
-    
 
 }
 
@@ -373,6 +362,7 @@ void buscarProducto(Tproducto productos[MAX_PRODUCTOS], int numProductos){
 
 }
 
+//Modulo que permite generar un ticket nuevo, con las condiciones necesarias
 void crearTicket(Tticket tickets[MAX_TICKETS], Tproducto productos[MAX_PRODUCTOS], int *numTickets, int numProductos){
 
     if((*numTickets) >= 100){
@@ -492,6 +482,7 @@ void crearTicket(Tticket tickets[MAX_TICKETS], Tproducto productos[MAX_PRODUCTOS
     }
 }
 
+//Funcion que permite buscar un ticket generado y permite borrarlo
 void buscarEliminarTicket(Tticket tickets[MAX_TICKETS], int *numTickets){
     
     char codigoTicket[MAX_CODIGO];
@@ -544,6 +535,7 @@ void buscarEliminarTicket(Tticket tickets[MAX_TICKETS], int *numTickets){
        
 }
 
+//Funcion que muestra aquellos productos donde el stock disponible sea menor que el minimo necesario
 void comprobarStock(Tproducto productos[MAX_PRODUCTOS], int numProductos){
     int i, count = 0;
 
@@ -569,6 +561,7 @@ void comprobarStock(Tproducto productos[MAX_PRODUCTOS], int numProductos){
 
 
 }
+
 
 int main(){
 
